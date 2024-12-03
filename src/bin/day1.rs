@@ -7,7 +7,7 @@ fn main() {
     let mut list1 = Vec::new();
     let mut list2 = Vec::new();
 
-    for line in input.lines(){
+    for line in input.lines() {
         let mut nums = line.split_ascii_whitespace();
         list1.push(nums.next().unwrap());
         list2.push(nums.next().unwrap());
@@ -22,10 +22,7 @@ fn main() {
         sum += (a.parse::<i32>().unwrap() - b.parse::<i32>().unwrap()).abs();
     }
 
-    println!(
-        "Part One: {:?}",
-        sum
-    );
+    println!("Part One: {:?}", sum);
 
     // Part 2
     let nums1 = list1.into_iter().map(|x| x.parse::<i32>().unwrap());
@@ -47,8 +44,10 @@ fn main() {
         }
     }
 
-    println!("Part Two: {:?}", nums1.map(|x|
-            {
+    println!(
+        "Part Two: {:?}",
+        nums1
+            .map(|x| {
                 for (n, c) in counts.iter() {
                     if *n == x {
                         return *n * *c;
@@ -56,6 +55,7 @@ fn main() {
                 }
 
                 return 0;
-            }
-            ).sum::<i32>());
+            })
+            .sum::<i32>()
+    );
 }
