@@ -1,9 +1,13 @@
 [package]
 name = "aoc24"
 version = "0.1.0"
+rust-version = "1.82"
 edition = "2021"
 
 [[bin]]
 name = "day1"
+
+[[bin]]
+name = "day2"
 
 [dependencies]
