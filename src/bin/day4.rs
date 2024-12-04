@@ -69,10 +69,40 @@ fn generate_kernels() -> Vec<Vec<Vec<Option<u8>>>> {
     result
 }
 
-// Count all occurances of XMAS in all directions in the puzzle input.
-fn count_xmas(puzzle: &str) -> i32 {
-    let kernels = generate_kernels();
+// Generate a vector of kernels.
+fn generate_kernels_part2() -> Vec<Vec<Vec<Option<u8>>>> {
+    let mut result = Vec::new();
 
+    // Diagonals
+    for v_x in [true, false] {
+        for v_y in [true, false] {
+            let mut diag = vec![vec![None; 3]; 3];
+            diag[1][1] = Some(b'A');
+
+            if v_x {
+                diag[0][0] = Some(b'M');
+                diag[2][2] = Some(b'S');
+            } else {
+                diag[0][0] = Some(b'S');
+                diag[2][2] = Some(b'M');
+            }
+
+            if v_y {
+                diag[0][2] = Some(b'M');
+                diag[2][0] = Some(b'S');
+            } else {
+                diag[0][2] = Some(b'S');
+                diag[2][0] = Some(b'M');
+            }
+
+            result.push(diag)
+        }
+    }
+
+    result
+}
+// Count all occurances of XMAS in all directions in the puzzle input.
+fn count_xmas(puzzle: &str, kernels: Vec<Vec<Vec<Option<u8>>>>) -> i32 {
     let puzzle_vec = puzzle.lines().map(|x| x.as_bytes()).collect::<Vec<&[u8]>>();
 
     kernels
@@ -84,5 +114,6 @@ fn count_xmas(puzzle: &str) -> i32 {
 fn main() {
     let input = fs::read_to_string("resources/day4.txt").expect("File path incorrect.");
 
-    println!("Part 1: {:}", count_xmas(&input));
+    println!("Part 1: {:}", count_xmas(&input, generate_kernels()));
+    println!("Part 2: {:}", count_xmas(&input, generate_kernels_part2()));
 }
