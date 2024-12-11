@@ -1,6 +1,10 @@
 use rayon::prelude::*;
 use std::fs;
 
+fn concat(a: i64, b: i64) -> i64 {
+    format!("{:}{:}", a, b).parse::<i64>().unwrap()
+}
+
 fn operator_reduce<T: Iterator<Item = i64> + Clone>(
     target: i64,
     acc: i64,
@@ -11,6 +15,7 @@ fn operator_reduce<T: Iterator<Item = i64> + Clone>(
     if let Some(x) = new_val {
         operator_reduce(target, acc * x, remaining.clone())
             || operator_reduce(target, acc + x, remaining.clone())
+            || operator_reduce(target, concat(acc, x), remaining.clone())
     } else {
         target == acc
     }
