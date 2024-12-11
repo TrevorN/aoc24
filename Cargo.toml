@@ -25,3 +25,4 @@ name = "day6"
 
 
 [dependencies]
+rayon = "1.10.0"

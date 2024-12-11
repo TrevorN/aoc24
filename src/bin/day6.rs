@@ -1,12 +1,13 @@
+use rayon::prelude::*;
 use std::fs;
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 enum Tile {
     Mark,
     Open(i32),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 enum Direction {
     Up,
     Down,
@@ -14,7 +15,7 @@ enum Direction {
     Right,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 struct Guard {
     position: (i32, i32),
     direction: Direction,
@@ -104,15 +105,74 @@ fn blocked(guard: &Guard, grid: &Vec<Vec<Tile>>) -> bool {
     grid[y as usize][x as usize] == Tile::Mark
 }
 
+fn loops(mut guard: Guard, mut grid: Vec<Vec<Tile>>) -> bool {
+    let mut previous_guards = vec![guard.clone()];
+    loop {
+        //println!("Guard: {:?}", guard);
+
+        if exited(&guard, &grid) {
+            println!("Exiting!");
+            return false;
+        }
+
+        let (x, y) = guard.position;
+
+        grid[y as usize][x as usize] = Tile::Open(1);
+
+        if blocked(&guard, &grid) {
+            guard.turn();
+            if previous_guards.contains(&guard) {
+                println!("It loops!");
+                return true;
+            }
+            previous_guards.push(guard.clone());
+
+            continue;
+        }
+
+        guard.advance();
+        if previous_guards.contains(&guard) {
+            println!("It loops!");
+            return true;
+        }
+        previous_guards.push(guard.clone());
+    }
+    false
+}
+
+fn part2(guard: Guard, reference_grid: Vec<Vec<Tile>>, grid: Vec<Vec<Tile>>) -> i32 {
+    grid.par_iter()
+        .enumerate()
+        .map(|i| {
+            i.1.par_iter()
+                .enumerate()
+                .map(|j| {
+                    if *j.1 == Tile::Open(1) && guard.position != (j.0 as i32, i.0 as i32) {
+                        let mut new_grid = reference_grid.clone();
+                        new_grid[i.0][j.0] = Tile::Mark;
+                        return loops(guard.clone(), new_grid) as i32;
+                    } else {
+                        return 0;
+                    }
+                })
+                .sum::<i32>()
+        })
+        .sum::<i32>()
+}
+
 fn main() {
     let input = fs::read_to_string("resources/day6.txt").expect("File path incorrect.");
 
-    let mut grid = input.lines().map(parse_line).collect::<Vec<Vec<Tile>>>();
+    let parsed_grid = input.lines().map(parse_line).collect::<Vec<Vec<Tile>>>();
 
-    let mut guard = parse_guard(&input).unwrap();
+    let mut grid = parsed_grid.clone();
+
+    let parsed_guard = parse_guard(&input).unwrap();
+
+    let mut guard = parsed_guard.clone();
 
     loop {
-        println!("Guard: {:?}", guard);
+        //println!("Guard: {:?}", guard);
 
         if exited(&guard, &grid) {
             break;
@@ -145,4 +205,5 @@ fn main() {
                 .sum::<i32>())
             .sum::<i32>()
     );
+    println!("Part 2: {:}", part2(parsed_guard, parsed_grid, grid));
 }
