@@ -30,4 +30,5 @@ name = "day8"
 
 
 [dependencies]
+gcd = "2.3.0"
 rayon = "1.10.0"
