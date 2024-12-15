@@ -54,6 +54,17 @@ fn count_destinations(map: &Vec<Vec<i32>>, start: (i32, i32)) -> i32 {
     destinations.len() as i32
 }
 
+fn count_destinations_part2(map: &Vec<Vec<i32>>, start: (i32, i32)) -> i32 {
+    let mut destinations = vec![];
+    count_destinations_inner(map, start, &mut destinations);
+    // Count the number of unique entries in result.
+    println!(
+        "Destinations for {:}, {:}: {:?}",
+        start.0, start.1, destinations
+    );
+    destinations.len() as i32
+}
+
 fn count_trails(map: &Vec<Vec<i32>>) -> i32 {
     let mut result = 0;
 
@@ -62,6 +73,21 @@ fn count_trails(map: &Vec<Vec<i32>>) -> i32 {
             if *val == 0 {
                 println!("Counting from {:}, {:}.", i, j);
                 result += count_destinations(map, (i as i32, j as i32));
+            }
+        }
+    }
+
+    result
+}
+
+fn count_trails_part2(map: &Vec<Vec<i32>>) -> i32 {
+    let mut result = 0;
+
+    for (i, row) in map.iter().enumerate() {
+        for (j, val) in row.iter().enumerate() {
+            if *val == 0 {
+                println!("Counting from {:}, {:}.", i, j);
+                result += count_destinations_part2(map, (i as i32, j as i32));
             }
         }
     }
@@ -81,4 +107,5 @@ fn main() {
         .collect::<Vec<_>>();
 
     println!("Part 1: {:}", count_trails(&map));
+    println!("Part 2: {:}", count_trails_part2(&map));
 }
